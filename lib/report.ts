@@ -1,6 +1,6 @@
 import { generateObject, generateText } from "ai";
 
-import { getModel, getClassifierModel, groqOptions } from "./llm";
+import { getModel, getClassifierModel } from "./llm";
 import {
   getCategories,
   matchCategoryByText,
@@ -66,7 +66,6 @@ export async function generateReport(input: UserInput): Promise<GenerateReportRe
     schema: ReportSchema,
     system: REPORT_SYSTEM,
     prompt: buildReportPrompt(input, category),
-    providerOptions: groqOptions(),
   });
 
   return { category, report: object };
