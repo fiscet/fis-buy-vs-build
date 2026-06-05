@@ -9,8 +9,8 @@
     "start": "next start"
   },
   "dependencies": {
+    "@ai-sdk/groq": "^3.0.39",
     "@libsql/client": "0.17.3",
-    "@openrouter/ai-sdk-provider": "2.9.0",
     "@upstash/ratelimit": "2.0.8",
     "@upstash/redis": "1.38.0",
     "ai": "6.0.197",

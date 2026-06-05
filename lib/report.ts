@@ -1,10 +1,8 @@
-import { generateObject } from "ai";
-import { z } from "zod";
+import { generateObject, generateText } from "ai";
 
-import { getModel } from "./llm";
+import { getModel, getClassifierModel, groqOptions } from "./llm";
 import {
   getCategories,
-  getCategoryById,
   matchCategoryByText,
   type KbCategory,
 } from "./kb";
@@ -37,25 +35,21 @@ async function classifyCategory(input: UserInput): Promise<KbCategory> {
   const direct = matchCategoryByText(input.description);
   if (direct) return direct;
 
-  // 2. Fallback: focused LLM classification, constrained to known ids.
+  // 2. Fallback: fast non-reasoning model returns a bare category id (~150ms).
+  // We validate by id substring (the model reliably emits the bare id); anything
+  // that doesn't contain a known id (incl. "nessuna") is treated as out of scope.
   const categories = getCategories();
-  const idEnum = z.enum(["nessuna", ...categories.map((c) => c.id)] as [
-    string,
-    ...string[],
-  ]);
-
-  const { object } = await generateObject({
-    model: getModel(),
-    schema: z.object({ categoryId: idEnum }),
+  const { text } = await generateText({
+    model: getClassifierModel(),
     system: CLASSIFY_SYSTEM,
     prompt: buildClassifyPrompt(input, categories),
+    maxOutputTokens: 20,
   });
 
-  if (object.categoryId === "nessuna") throw new OutOfScopeError();
-
-  const category = getCategoryById(object.categoryId);
-  if (!category) throw new OutOfScopeError();
-  return category;
+  const out = text.toLowerCase();
+  const matched = categories.find((c) => out.includes(c.id));
+  if (!matched) throw new OutOfScopeError();
+  return matched;
 }
 
 export interface GenerateReportResult {
@@ -72,6 +66,7 @@ export async function generateReport(input: UserInput): Promise<GenerateReportRe
     schema: ReportSchema,
     system: REPORT_SYSTEM,
     prompt: buildReportPrompt(input, category),
+    providerOptions: groqOptions(),
   });
 
   return { category, report: object };
