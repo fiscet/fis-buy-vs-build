@@ -1,6 +1,7 @@
 import { generateObject, generateText } from "ai";
 
 import { getModel, getClassifierModel } from "./llm";
+import { assertNoInjection } from "./guard";
 import {
   getCategories,
   matchCategoryByText,
@@ -59,6 +60,9 @@ export interface GenerateReportResult {
 
 /** Run the full pipeline and return the validated report + matched category. */
 export async function generateReport(input: UserInput): Promise<GenerateReportResult> {
+  // Gate: reject prompt-injection attempts before spending the costly generation.
+  await assertNoInjection(input.description);
+
   const category = await classifyCategory(input);
 
   const { object } = await generateObject({

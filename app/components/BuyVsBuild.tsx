@@ -79,7 +79,11 @@ export default function BuyVsBuild() {
       const data = await res.json();
 
       if (!res.ok) {
-        if (res.status === 422) {
+        if (res.status === 422 && data?.blocked) {
+          setErrorMsg(
+            "Non è stato possibile elaborare questa richiesta. Descrivi un processo aziendale reale da digitalizzare.",
+          );
+        } else if (res.status === 422) {
           setErrorMsg(
             "La descrizione non rientra nei processi che questo strumento confronta. Prova a descrivere un processo aziendale da digitalizzare (gestionale, prenotazioni, portale clienti, e-commerce, integrazioni).",
           );

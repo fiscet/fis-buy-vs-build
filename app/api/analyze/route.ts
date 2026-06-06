@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { generateReport, OutOfScopeError } from "@/lib/report";
+import { InjectionError } from "@/lib/guard";
 import { InputSchema } from "@/lib/schema";
 
 /**
@@ -35,6 +36,9 @@ export async function POST(request: Request) {
     const { category, report } = await generateReport(parsed.data);
     return NextResponse.json({ categoryId: category.id, report });
   } catch (err) {
+    if (err instanceof InjectionError) {
+      return NextResponse.json({ error: err.message, blocked: true }, { status: 422 });
+    }
     if (err instanceof OutOfScopeError) {
       return NextResponse.json({ error: err.message, outOfScope: true }, { status: 422 });
     }
