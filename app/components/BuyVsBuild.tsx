@@ -9,6 +9,7 @@ import {
   TIME_PRESSURE_OPTIONS,
 } from "@/lib/labels";
 import ReportView from "./ReportView";
+import LeadCapture from "./LeadCapture";
 
 const MIN_DESCRIPTION = 15;
 
@@ -53,6 +54,8 @@ export default function BuyVsBuild() {
   const [status, setStatus] = useState<Status>("idle");
   const [errorMsg, setErrorMsg] = useState("");
   const [report, setReport] = useState<Report | null>(null);
+  const [categoryId, setCategoryId] = useState<string | undefined>(undefined);
+  const [submittedText, setSubmittedText] = useState("");
 
   const tooShort = description.trim().length < MIN_DESCRIPTION;
 
@@ -64,12 +67,14 @@ export default function BuyVsBuild() {
     setErrorMsg("");
     setReport(null);
 
+    const trimmed = description.trim();
+
     try {
       const res = await fetch("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          description: description.trim(),
+          description: trimmed,
           teamSize: teamSize || undefined,
           budget: budget || undefined,
           timePressure: timePressure || undefined,
@@ -95,6 +100,8 @@ export default function BuyVsBuild() {
       }
 
       setReport(data.report as Report);
+      setCategoryId(data.categoryId as string | undefined);
+      setSubmittedText(trimmed);
       setStatus("done");
     } catch {
       setErrorMsg("Errore di rete. Controlla la connessione e riprova.");
@@ -150,7 +157,12 @@ export default function BuyVsBuild() {
         </p>
       )}
 
-      {status === "done" && report && <ReportView report={report} />}
+      {status === "done" && report && (
+        <>
+          <ReportView report={report} />
+          <LeadCapture report={report} categoryId={categoryId} inputText={submittedText} />
+        </>
+      )}
     </div>
   );
 }

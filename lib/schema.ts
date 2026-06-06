@@ -83,3 +83,17 @@ export const InputSchema = z.object({
 });
 
 export type UserInput = z.infer<typeof InputSchema>;
+
+/**
+ * Lead capture contract (email form -> /api/lead). The lead is the only real
+ * asset of this app, so the full report travels with it and is persisted.
+ */
+export const LeadSchema = z.object({
+  email: z.email("Email non valida.").trim().toLowerCase(),
+  company: z.string().trim().max(200).optional(),
+  categoryId: z.string().max(80).optional(),
+  inputText: z.string().min(1).max(2000),
+  report: ReportSchema,
+});
+
+export type LeadPayload = z.infer<typeof LeadSchema>;
