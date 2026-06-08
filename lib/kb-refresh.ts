@@ -60,19 +60,26 @@ export interface CategoryOutcome {
   note?: string;
 }
 
-function buildQuery(c: KbCategory): string {
+// Two queries per category to widen the candidate pool: the mainstream set and,
+// separately, alternatives + premium/enterprise options (so we don't keep
+// surfacing only the usual names).
+function buildQueries(c: KbCategory): string[] {
   const year = new Date().getFullYear();
-  return `${c.name}: software e soluzioni con prezzi per PMI in Italia (${year}). ${c.aliases
-    .slice(0, 3)
-    .join(", ")}`;
+  const aliases = c.aliases.slice(0, 3).join(", ");
+  return [
+    `${c.name}: software e soluzioni con prezzi per PMI in Italia (${year}). ${aliases}`,
+    `migliori alternative e soluzioni premium/enterprise per ${c.name} (mercato italiano, ${year}), confronto prezzi`,
+  ];
 }
 
 const SYNTH_SYSTEM = `Sei un analista di mercato software per PMI italiane. Dato un insieme di FONTI WEB recenti e i dati attuali di una categoria, produci una versione AGGIORNATA di soluzioni pronte e costi.
 Regole:
 - Basati SOLO sulle fonti fornite e sui dati attuali; non inventare strumenti o prezzi non supportati.
 - Output in ITALIANO, conciso e concreto. priceRange con valori realistici (es. "~€20-40 per utente/mese").
-- Mantieni 3-5 soluzioni rappresentative e di mercato. Se le fonti non aggiungono nulla di meglio, puoi riconfermare i dati attuali.
-- typicalCustomCost: range e timeline plausibili per lo sviluppo su misura della categoria.`;
+- Fornisci una GAMMA AMPIA E VARIA: 5-8 soluzioni. Mescola fasce diverse — opzioni accessibili/no-code, soluzioni di fascia media, e soluzioni PREMIUM/ENTERPRISE più costose — e includi, dove esistono, strumenti specifici per il mercato/settore italiano.
+- NON limitarti ai soliti nomi generici (es. Odoo, Zapier, Make) se le fonti offrono alternative valide, più specifiche o più complete: privilegia la varietà rispetto alla ripetizione.
+- commonSolutions deve contenere SOLO PRODOTTI pronti all'uso e riconoscibili (SaaS, on-prem, piattaforme no-code) che si possono acquistare/sottoscrivere. ESCLUDI CATEGORICAMENTE agenzie, software house, freelance, consulenti e "progetti su misura" — inclusi nomi propri di persone o aziende di sviluppo (es. "Gestionale personalizzato di Mario Rossi", "X su misura"): lo sviluppo custom è l'altra strada (la sintetizza typicalCustomCost), non una soluzione da comprare. Se per una categoria non trovi abbastanza prodotti reali, elencane MENO (anche solo 4) ma tutti prodotti veri.
+- typicalCustomCost: UNA SOLA forbice stretta e credibile per il progetto tipico (rapporto massimo ~2x tra minimo e massimo, es. "€8.000-15.000"). Puoi citare un punto d'ingresso da ~€3.000 per i casi più semplici, ma NON elencare più bande che insieme coprono un intervallo enorme (evita cose come "€3.000-8.000 / €8.000-20.000 / €20.000-40.000"). timeline realistica e coerente.`;
 
 /** Synthesize an updated category from search results. Returns null if the new
  *  data fails validation or is clearly worse than the existing data. */
@@ -134,7 +141,12 @@ export async function refreshKb(provider: SearchProvider): Promise<RefreshReport
 
   for (const category of kb.categories) {
     try {
-      const results = await provider.search(buildQuery(category), 5);
+      // Run both queries and merge (dedup by url) to widen the candidate pool.
+      const batches = await Promise.all(
+        buildQueries(category).map((q) => provider.search(q, 6)),
+      );
+      const seen = new Set<string>();
+      const results = batches.flat().filter((r) => (seen.has(r.url) ? false : seen.add(r.url)));
       const updated = await synthesizeCategory(category, results);
       if (updated) {
         Object.assign(category, updated);
