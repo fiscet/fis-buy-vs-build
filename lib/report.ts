@@ -8,6 +8,7 @@ import {
   REPORT_SYSTEM,
   buildClassifyPrompt,
   buildReportPrompt,
+  buildGenericReportPrompt,
 } from "./prompts";
 import { ReportSchema, type Report, type UserInput } from "./schema";
 
@@ -27,16 +28,18 @@ export class OutOfScopeError extends Error {
   }
 }
 
-async function classifyCategory(input: UserInput): Promise<KbCategory> {
+/** A matched KB category, or "generic" for a legitimate software/build need with
+ *  no KB scheda (handled from the model's knowledge, not rejected). */
+type Classification = KbCategory | "generic";
+
+async function classifyCategory(input: UserInput): Promise<Classification> {
   const { categories } = await loadKb();
 
   // 1. Cheap, deterministic alias/name match — no model call when it hits.
   const direct = matchCategoryByText(categories, input.description);
   if (direct) return direct;
 
-  // 2. Fallback: fast non-reasoning model returns a bare category id (~150ms).
-  // We validate by id substring (the model reliably emits the bare id); anything
-  // that doesn't contain a known id (incl. "nessuna") is treated as out of scope.
+  // 2. Fallback: fast non-reasoning model emits a bare id, "generico", or "nessuna".
   const { text } = await generateText({
     model: getClassifierModel(),
     system: CLASSIFY_SYSTEM,
@@ -46,28 +49,34 @@ async function classifyCategory(input: UserInput): Promise<KbCategory> {
 
   const out = text.toLowerCase();
   const matched = categories.find((c) => out.includes(c.id));
-  if (!matched) throw new OutOfScopeError();
-  return matched;
+  if (matched) return matched;
+
+  // Reject ONLY when the input clearly isn't a software/digitalization need.
+  // Anything else (a real build-vs-buy question outside the 5 KB areas) is a
+  // valuable lead -> handle it generically rather than turning it away.
+  if (/\bnessuna\b/.test(out)) throw new OutOfScopeError();
+  return "generic";
 }
 
 export interface GenerateReportResult {
-  category: KbCategory;
+  categoryId: string;
   report: Report;
 }
 
-/** Run the full pipeline and return the validated report + matched category. */
+/** Run the full pipeline and return the validated report + a category id. */
 export async function generateReport(input: UserInput): Promise<GenerateReportResult> {
   // Gate: reject prompt-injection attempts before spending the costly generation.
   await assertNoInjection(input.description);
 
-  const category = await classifyCategory(input);
+  const result = await classifyCategory(input);
+  const isGeneric = result === "generic";
 
   const { object } = await generateObject({
     model: getModel(),
     schema: ReportSchema,
     system: REPORT_SYSTEM,
-    prompt: buildReportPrompt(input, category),
+    prompt: isGeneric ? buildGenericReportPrompt(input) : buildReportPrompt(input, result),
   });
 
-  return { category, report: object };
+  return { categoryId: isGeneric ? "generico" : result.id, report: object };
 }

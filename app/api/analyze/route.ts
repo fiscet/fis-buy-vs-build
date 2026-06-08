@@ -59,9 +59,9 @@ export async function POST(request: Request) {
   }
 
   try {
-    const { category, report } = await generateReport(parsed.data);
+    const { categoryId, report } = await generateReport(parsed.data);
     await recordUse(id);
-    return reply({ categoryId: category.id, report });
+    return reply({ categoryId, report });
   } catch (err) {
     if (err instanceof InjectionError) {
       return reply({ error: err.message, blocked: true }, { status: 422 });

@@ -37,15 +37,18 @@ function describeContext(input: UserInput): string {
 }
 
 /** System prompt for the lightweight classification fallback step. */
-export const CLASSIFY_SYSTEM = `Sei un classificatore. Dato il testo di un imprenditore italiano che descrive un processo da digitalizzare, scegli la categoria più adatta tra quelle fornite.
-Rispondi SOLO con l'id della categoria scelta, oppure "nessuna" se il testo non rientra in nessuna categoria (es. richiesta fuori ambito, non legata a digitalizzare un processo aziendale).
-Non inventare id. Scegli tra gli id elencati.`;
+export const CLASSIFY_SYSTEM = `Sei un classificatore per uno strumento che confronta "comprare vs sviluppare" software per imprese.
+Dato il testo dell'utente, rispondi con UNA SOLA parola tra:
+- l'id ESATTO di una delle categorie elencate, se il caso vi rientra;
+- "generico", se è una esigenza software / prodotto digitale REALE ma che non rientra in quelle categorie (es. piattaforma e-learning/streaming, marketplace, app mobile, SaaS, community, ecc.);
+- "nessuna", SOLO se il testo non è affatto una richiesta software/di digitalizzazione (es. una ricetta, una domanda personale).
+Nel dubbio tra "generico" e "nessuna", scegli "generico". Non inventare id.`;
 
 export function buildClassifyPrompt(input: UserInput, categories: readonly KbCategory[]): string {
   const list = categories
     .map((c) => `- ${c.id}: ${c.name} — ${c.description}`)
     .join("\n");
-  return `Categorie disponibili:\n${list}\n\nTesto dell'utente:\n"""${input.description}"""\n\nQuale id di categoria descrive meglio questo processo?`;
+  return `Categorie disponibili:\n${list}\n\nTesto dell'utente:\n"""${input.description}"""\n\nRispondi con un id, "generico" o "nessuna".`;
 }
 
 /**
@@ -86,4 +89,26 @@ FATTI DALLA KNOWLEDGE BASE (categoria: ${category.name}, tension: ${category.ten
 ${JSON.stringify(kbFacts, null, 2)}
 
 Genera il report di confronto strutturato secondo lo schema. Ricorda: confronto neutro, output in italiano, rispetta la tension "${category.tension}", e lega il contextualLean a ciò che l'utente ha descritto.`;
+}
+
+/**
+ * Prompt for legitimate software/build-vs-buy requests that don't match any KB
+ * category (e.g. e-learning/streaming platform, marketplace, SaaS). No KB facts:
+ * the model builds the comparison from its knowledge of real products, with an
+ * explicit "no curated data — verify" note. These are high-value leads we must
+ * not turn away.
+ */
+export function buildGenericReportPrompt(input: UserInput): string {
+  return `CONTESTO DELL'UTENTE
+Descrizione del prodotto/processo da realizzare:
+"""${input.description}"""
+${describeContext(input)}
+
+Per questo caso NON esiste una scheda della knowledge base. Costruisci comunque il confronto "Compra vs Sviluppa" usando la tua conoscenza di PRODOTTI REALI e affermati adatti a questo tipo di soluzione (SaaS/piattaforme verticali note), con prezzi INDICATIVI. Non inventare prodotti inesistenti.
+- "category": assegna un nome chiaro e specifico alla categoria dedotta (es. "Piattaforma e-learning / streaming di corsi video").
+- buyOption.representativeSolutions: 3-5 prodotti reali e pertinenti, su fasce diverse, includendo almeno un'opzione premium quando esiste.
+- buildOption: stima costi e tempi del custom in modo credibile e con forbice STRETTA, legati a team/budget/tempistiche descritti.
+- "confidenceNote": dichiara ESPLICITAMENTE che per questo caso non c'è una scheda dati curata e che soluzioni e prezzi vanno verificati con preventivi/listini aggiornati.
+
+Genera il report strutturato secondo lo schema. Confronto neutro, output in italiano, contextualLean legato a ciò che l'utente ha descritto.`;
 }
