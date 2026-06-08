@@ -1,12 +1,10 @@
-import { readFile, writeFile } from "node:fs/promises";
-import path from "node:path";
-
 import { generateObject } from "ai";
 import { z } from "zod";
 
 import { getModel } from "./llm";
+import { loadKb, saveKb } from "./kb";
 import type { SearchProvider, SearchResult } from "./search";
-import type { KbCategory, KnowledgeBase } from "./kb";
+import type { KbCategory } from "./kb";
 
 /**
  * Monthly KB refresh (cron only):
@@ -16,8 +14,6 @@ import type { KbCategory, KnowledgeBase } from "./kb";
  * "Good data is sacred": a category is replaced only if the new data validates
  * AND is not clearly worse than what we already have. Otherwise we keep the old.
  */
-
-const KB_PATH = path.join(process.cwd(), "data", "kb-seed.json");
 
 // What the LLM is allowed to refresh from web sources (facts that change over
 // time). Curated fields (id, name, aliases, description, tension) stay fixed.
@@ -124,16 +120,6 @@ function bumpVersion(version: string): string {
   return `${m[1]}.${Number(m[2]) + 1}`;
 }
 
-async function loadKb(): Promise<KnowledgeBase> {
-  return JSON.parse(await readFile(KB_PATH, "utf8")) as KnowledgeBase;
-}
-
-async function writeKb(kb: KnowledgeBase): Promise<void> {
-  // Validate the WHOLE KB before persisting — never write malformed data.
-  KnowledgeBaseSchema.parse(kb);
-  await writeFile(KB_PATH, JSON.stringify(kb, null, 2) + "\n", "utf8");
-}
-
 export interface RefreshReport {
   version: string;
   outcomes: CategoryOutcome[];
@@ -142,7 +128,7 @@ export interface RefreshReport {
 
 /** Run the full refresh across all categories and persist if anything changed. */
 export async function refreshKb(provider: SearchProvider): Promise<RefreshReport> {
-  const kb = await loadKb();
+  const kb = await loadKb({ fresh: true });
   const outcomes: CategoryOutcome[] = [];
   let changed = false;
 
@@ -165,7 +151,9 @@ export async function refreshKb(provider: SearchProvider): Promise<RefreshReport
   if (changed) {
     kb.version = bumpVersion(kb.version);
     kb.lastUpdated = new Date().toISOString().slice(0, 10);
-    await writeKb(kb);
+    // Validate the WHOLE KB before persisting — never write malformed data.
+    KnowledgeBaseSchema.parse(kb);
+    await saveKb(kb);
   }
 
   return { version: kb.version, outcomes, written: changed };

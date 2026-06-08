@@ -84,8 +84,9 @@ per IP (anti-abuso) e dopo 2 analisi gratuite compare il gate email.
 ## 4. Exa — refresh mensile della KB (Fase 7)
 
 Il cron è già pronto: ogni mese cerca sul web tool e prezzi per categoria, l'LLM sintetizza e
-**aggiorna `data/kb-seed.json` solo se i nuovi dati validano e non sono peggiori** (altrimenti
-tiene i vecchi). Senza `EXA_API_KEY` il cron risponde "skipped".
+**aggiorna la KB su Turso (`kb_doc`) solo se i nuovi dati validano e non sono peggiori**
+(altrimenti tiene i vecchi). Il runtime legge da Turso (cache) con `data/kb-seed.json` come
+seed/fallback. Senza `EXA_API_KEY` il cron risponde "skipped".
 
 ### Passi
 1. Crea un account su https://exa.ai (free tier: 1000 richieste/mese, più che sufficienti).
@@ -101,16 +102,12 @@ CRON_SECRET=una-stringa-segreta-a-caso   # protegge l'endpoint del cron
 curl -H "Authorization: Bearer $CRON_SECRET" http://localhost:3000/api/cron/refresh-kb
 ```
 Risponde con `version`, `written` e l'esito per categoria (`updated` / `kept` / `error`).
-In locale scrive davvero `data/kb-seed.json` (versione + lastUpdated aggiornati).
-
-> NOTA DEPLOY (Fase 8): su Vercel il filesystem è read-only, quindi il cron non può
-> riscrivere `data/kb-seed.json` nel bundle. Va deciso il meccanismo di persistenza:
-> commit-back del JSON sul repo via GitHub API (rideploy), oppure spostare la KB su Turso/Blob.
-> Da affrontare al deploy.
+Scrive la KB aggiornata su **Turso** (`kb_doc`), non su file → funziona anche su Vercel
+(filesystem read-only) senza rideploy. Il `data/kb-seed.json` resta il bootstrap/fallback.
 
 ---
 
 ## Cosa resta dopo
-- **Fase 8 — Deploy** su Vercel (env + cron già in `vercel.json`). Due note:
-  1. persistenza KB del cron (vedi sopra);
-  2. per garantire la latenza sotto carico, valutare un piano a pagamento sul provider LLM.
+- **Fase 8 — Deploy** su Vercel: env (sopra) + cron già in `vercel.json`. La KB del cron va su
+  Turso, quindi nessun problema di filesystem read-only. Unica nota: per garantire la latenza
+  sotto carico, eventualmente valutare un piano a pagamento sul provider LLM.

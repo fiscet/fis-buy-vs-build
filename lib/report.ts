@@ -2,11 +2,7 @@ import { generateObject, generateText } from "ai";
 
 import { getModel, getClassifierModel } from "./llm";
 import { assertNoInjection } from "./guard";
-import {
-  getCategories,
-  matchCategoryByText,
-  type KbCategory,
-} from "./kb";
+import { loadKb, matchCategoryByText, type KbCategory } from "./kb";
 import {
   CLASSIFY_SYSTEM,
   REPORT_SYSTEM,
@@ -32,14 +28,15 @@ export class OutOfScopeError extends Error {
 }
 
 async function classifyCategory(input: UserInput): Promise<KbCategory> {
+  const { categories } = await loadKb();
+
   // 1. Cheap, deterministic alias/name match — no model call when it hits.
-  const direct = matchCategoryByText(input.description);
+  const direct = matchCategoryByText(categories, input.description);
   if (direct) return direct;
 
   // 2. Fallback: fast non-reasoning model returns a bare category id (~150ms).
   // We validate by id substring (the model reliably emits the bare id); anything
   // that doesn't contain a known id (incl. "nessuna") is treated as out of scope.
-  const categories = getCategories();
   const { text } = await generateText({
     model: getClassifierModel(),
     system: CLASSIFY_SYSTEM,
