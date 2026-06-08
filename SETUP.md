@@ -66,10 +66,31 @@ RESEND_FROM=onboarding@resend.dev          # in prod: "Sviluppa o Compra <report
 
 ---
 
+## 3. Upstash — rate limiting + gate "3 usi → email" (Fase 6)
+
+Il codice è già pronto. Senza queste chiavi il sistema **degrada in aperto** (nessun limite,
+nessun gate) così gira in locale. Con le chiavi: max 10 richieste/minuto per IP (anti-abuso)
+e dopo 3 analisi gratuite compare il gate email.
+
+### Passi
+1. Crea un account su https://upstash.com
+2. Crea un database **Redis** (regione vicina, es. EU)
+3. Dalla pagina del DB copia i valori REST → `.env.local`:
+
+```
+UPSTASH_REDIS_REST_URL=https://....upstash.io
+UPSTASH_REDIS_REST_TOKEN=...
+```
+
+### Come testiamo il gate
+1. Con le chiavi attive, genera **3 report** di fila dalla home.
+2. Alla **4ª** richiesta compare il box "Continua gratuitamente": inserisci email + consenso.
+3. Dopo lo sblocco la 4ª analisi parte da sola. (Il lead "email-gate" finisce su Turso.)
+   Per ripetere il test: cancella i cookie del sito (resetta `svc_id`).
+
+---
+
 ## Cosa resta dopo (per memoria)
-- **Fase 6 — Upstash** (rate limiting + gate "3 usi poi email obbligatoria", durevole lato
-  server). Account: https://upstash.com → Redis DB → `UPSTASH_REDIS_REST_URL` +
-  `UPSTASH_REDIS_REST_TOKEN`. La protezione anti-injection (Prompt Guard) è già attiva.
 - **Fase 7 — Cron** (refresh mensile KB): servirà una search API (Tavily/Serper) — chiavi
   già predisposte in `.env.example`.
 - **Fase 8 — Deploy** su Vercel (env + cron). Nota: per garantire latenza serve un piano

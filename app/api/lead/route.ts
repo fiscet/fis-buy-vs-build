@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 import { LeadSchema } from "@/lib/schema";
 import { insertLead, DbNotConfiguredError } from "@/lib/db";
 import { sendReportEmail, EmailNotConfiguredError } from "@/lib/email";
+import { unlock } from "@/lib/limits";
+import { getClientId, setClientCookie } from "@/lib/identity";
 
 /**
  * POST /api/lead
@@ -17,16 +19,23 @@ export const runtime = "nodejs";
 export const maxDuration = 30;
 
 export async function POST(request: Request) {
+  const id = await getClientId();
+  const reply = (body: unknown, init?: ResponseInit) => {
+    const res = NextResponse.json(body, init);
+    setClientCookie(res, id);
+    return res;
+  };
+
   let body: unknown;
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ error: "JSON non valido." }, { status: 400 });
+    return reply({ error: "JSON non valido." }, { status: 400 });
   }
 
   const parsed = LeadSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json(
+    return reply(
       { error: "Dati non validi.", issues: parsed.error.flatten() },
       { status: 400 },
     );
@@ -46,17 +55,20 @@ export async function POST(request: Request) {
     });
   } catch (err) {
     if (err instanceof DbNotConfiguredError) {
-      return NextResponse.json(
+      return reply(
         { error: "Invio non ancora configurato. Riprova più tardi." },
         { status: 503 },
       );
     }
     console.error("[lead] Turso write failed:", err);
-    return NextResponse.json(
+    return reply(
       { error: "Salvataggio non riuscito. Riprova tra poco." },
       { status: 500 },
     );
   }
+
+  // Leaving an email lifts the free-use gate for this client.
+  await unlock(id);
 
   // 2. Email is best-effort: the lead is already safe.
   let emailed = true;
@@ -69,5 +81,5 @@ export async function POST(request: Request) {
     }
   }
 
-  return NextResponse.json({ ok: true, emailed });
+  return reply({ ok: true, emailed });
 }

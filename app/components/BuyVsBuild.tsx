@@ -12,6 +12,7 @@ import ReportView from "./ReportView";
 import ReportSkeleton from "./ReportSkeleton";
 import LeadCapture from "./LeadCapture";
 import ExamplesModal from "./ExamplesModal";
+import GateForm from "./GateForm";
 import type { Example } from "@/lib/examples";
 
 const MIN_DESCRIPTION = 15;
@@ -60,6 +61,7 @@ export default function BuyVsBuild() {
   const [categoryId, setCategoryId] = useState<string | undefined>(undefined);
   const [submittedText, setSubmittedText] = useState("");
   const [showExamples, setShowExamples] = useState(false);
+  const [gated, setGated] = useState(false);
 
   const tooShort = description.trim().length < MIN_DESCRIPTION;
 
@@ -71,13 +73,17 @@ export default function BuyVsBuild() {
     setShowExamples(false);
   }
 
-  async function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (tooShort || status === "loading") return;
+    runAnalysis();
+  }
 
+  async function runAnalysis() {
     setStatus("loading");
     setErrorMsg("");
     setReport(null);
+    setGated(false);
 
     const trimmed = description.trim();
 
@@ -96,7 +102,15 @@ export default function BuyVsBuild() {
       const data = await res.json();
 
       if (!res.ok) {
-        if (res.status === 422 && data?.blocked) {
+        if (res.status === 403 && data?.gate === "email") {
+          setSubmittedText(trimmed);
+          setGated(true);
+          setStatus("idle");
+          return;
+        }
+        if (res.status === 429) {
+          setErrorMsg(data?.error || "Troppe richieste. Riprova tra qualche minuto.");
+        } else if (res.status === 422 && data?.blocked) {
           setErrorMsg(
             "Non è stato possibile elaborare questa richiesta. Descrivi un processo aziendale reale da digitalizzare.",
           );
@@ -173,6 +187,8 @@ export default function BuyVsBuild() {
       )}
 
       {status === "loading" && <ReportSkeleton />}
+
+      {gated && <GateForm inputText={submittedText} onUnlocked={() => runAnalysis()} />}
 
       {status === "done" && report && (
         <>
