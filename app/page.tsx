@@ -4,7 +4,7 @@ import BuyVsBuild from './components/BuyVsBuild';
 
 export default function Home() {
   return (
-    <main className="mx-auto max-w-4xl px-6 py-12 sm:py-16">
+    <main className="mx-auto max-w-5xl px-6 py-12 sm:py-16">
       {/* Hero */}
       <header className="flex flex-col items-center text-center">
         <Image

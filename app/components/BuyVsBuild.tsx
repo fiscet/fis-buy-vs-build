@@ -9,6 +9,7 @@ import {
   TIME_PRESSURE_OPTIONS,
 } from "@/lib/labels";
 import ReportView from "./ReportView";
+import ReportSkeleton from "./ReportSkeleton";
 import LeadCapture from "./LeadCapture";
 import ExamplesModal from "./ExamplesModal";
 import type { Example } from "@/lib/examples";
@@ -171,11 +172,7 @@ export default function BuyVsBuild() {
         </p>
       )}
 
-      {status === "loading" && (
-        <p className="mt-6 animate-pulse text-sm text-ink-soft/60">
-          Sto confrontando soluzioni pronte e sviluppo su misura per il tuo caso…
-        </p>
-      )}
+      {status === "loading" && <ReportSkeleton />}
 
       {status === "done" && report && (
         <>
