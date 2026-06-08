@@ -5,7 +5,8 @@ import Footer from './components/Footer';
 export const metadata: Metadata = {
   title: 'Sviluppa o Compra? | Guida alla scelta del software per PMI',
   description:
-    'Descrivi un processo da digitalizzare e ottieni un confronto neutro tra comprare una soluzione pronta e costruirne una su misura.'
+    'Descrivi un processo da digitalizzare e ottieni un confronto neutro tra comprare una soluzione pronta e costruirne una su misura.',
+  manifest: '/site.webmanifest'
 };
 
 export default function RootLayout({

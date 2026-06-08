@@ -1,0 +1,11 @@
+{
+  "name": "Sviluppa o Compra",
+  "short_name": "Sviluppa o Compra",
+  "icons": [
+    { "src": "/android-chrome-192x192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/android-chrome-512x512.png", "sizes": "512x512", "type": "image/png" }
+  ],
+  "theme_color": "#133542",
+  "background_color": "#f6f4ef",
+  "display": "standalone"
+}
