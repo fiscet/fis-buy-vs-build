@@ -81,8 +81,36 @@ per IP (anti-abuso) e dopo 2 analisi gratuite compare il gate email.
 
 ---
 
-## Cosa resta dopo (per memoria)
-- **Fase 7 — Cron** (refresh mensile KB): servirà una search API (Tavily/Serper) — chiavi
-  già predisposte in `.env.example`.
-- **Fase 8 — Deploy** su Vercel (env + cron). Nota: per garantire latenza serve un piano
-  Groq a pagamento sotto carico (vedi commit sui benchmark LLM).
+## 4. Exa — refresh mensile della KB (Fase 7)
+
+Il cron è già pronto: ogni mese cerca sul web tool e prezzi per categoria, l'LLM sintetizza e
+**aggiorna `data/kb-seed.json` solo se i nuovi dati validano e non sono peggiori** (altrimenti
+tiene i vecchi). Senza `EXA_API_KEY` il cron risponde "skipped".
+
+### Passi
+1. Crea un account su https://exa.ai (free tier: 1000 richieste/mese, più che sufficienti).
+2. Copia la API key → `.env.local`:
+
+```
+EXA_API_KEY=...
+CRON_SECRET=una-stringa-segreta-a-caso   # protegge l'endpoint del cron
+```
+
+### Triggerare/testare a mano
+```bash
+curl -H "Authorization: Bearer $CRON_SECRET" http://localhost:3000/api/cron/refresh-kb
+```
+Risponde con `version`, `written` e l'esito per categoria (`updated` / `kept` / `error`).
+In locale scrive davvero `data/kb-seed.json` (versione + lastUpdated aggiornati).
+
+> NOTA DEPLOY (Fase 8): su Vercel il filesystem è read-only, quindi il cron non può
+> riscrivere `data/kb-seed.json` nel bundle. Va deciso il meccanismo di persistenza:
+> commit-back del JSON sul repo via GitHub API (rideploy), oppure spostare la KB su Turso/Blob.
+> Da affrontare al deploy.
+
+---
+
+## Cosa resta dopo
+- **Fase 8 — Deploy** su Vercel (env + cron già in `vercel.json`). Due note:
+  1. persistenza KB del cron (vedi sopra);
+  2. per garantire la latenza sotto carico, valutare un piano a pagamento sul provider LLM.
