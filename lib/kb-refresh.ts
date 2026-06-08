@@ -133,13 +133,32 @@ export interface RefreshReport {
   written: boolean;
 }
 
-/** Run the full refresh across all categories and persist if anything changed. */
-export async function refreshKb(provider: SearchProvider): Promise<RefreshReport> {
+/**
+ * Refresh and persist if anything changed.
+ * @param select "all" (full refresh — slow, ~90s, for local/Pro), "oldest"
+ *   (single least-recently-updated category — the Hobby-friendly default, fits a
+ *   60s function), or a specific category id.
+ */
+export async function refreshKb(
+  provider: SearchProvider,
+  select: "all" | "oldest" | string = "oldest",
+): Promise<RefreshReport> {
   const kb = await loadKb({ fresh: true });
+
+  let targets = kb.categories;
+  if (select === "oldest") {
+    const oldest = [...kb.categories].sort((a, b) =>
+      a.updatedAt < b.updatedAt ? -1 : 1,
+    )[0];
+    targets = oldest ? [oldest] : [];
+  } else if (select !== "all") {
+    targets = kb.categories.filter((c) => c.id === select);
+  }
+
   const outcomes: CategoryOutcome[] = [];
   let changed = false;
 
-  for (const category of kb.categories) {
+  for (const category of targets) {
     try {
       // Run both queries and merge (dedup by url) to widen the candidate pool.
       const batches = await Promise.all(

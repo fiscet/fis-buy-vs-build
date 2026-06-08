@@ -4,13 +4,17 @@ import { getSearchProvider } from "@/lib/search";
 import { refreshKb } from "@/lib/kb-refresh";
 
 /**
- * GET /api/cron/refresh-kb — monthly KB refresh (Vercel Cron).
+ * GET /api/cron/refresh-kb — KB refresh (Vercel Cron).
  * Protected by CRON_SECRET (Vercel sends "Authorization: Bearer <CRON_SECRET>").
- * Skips cleanly if no search key is configured.
+ *
+ * Default: refresh ONE category (the least-recently-updated) so each run fits
+ * the Hobby 60s function limit; the daily schedule rotates through all of them.
+ * `?all=1` refreshes every category (slow ~90s — local/Pro only).
+ * `?category=<id>` refreshes a specific one.
  */
 
 export const runtime = "nodejs";
-export const maxDuration = 300; // synthesis across all categories
+export const maxDuration = 60; // Hobby cap; one category per run stays well under
 
 export async function GET(request: Request) {
   const secret = process.env.CRON_SECRET;
@@ -23,8 +27,12 @@ export async function GET(request: Request) {
     return NextResponse.json({ skipped: true, reason: "EXA_API_KEY non configurata." });
   }
 
+  const params = new URL(request.url).searchParams;
+  const select =
+    params.get("all") !== null ? "all" : (params.get("category") ?? "oldest");
+
   try {
-    const report = await refreshKb(provider);
+    const report = await refreshKb(provider, select);
     return NextResponse.json({ ok: true, ...report });
   } catch (err) {
     console.error("[cron/refresh-kb] failed:", err);
