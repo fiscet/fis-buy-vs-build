@@ -15,7 +15,8 @@ export class DbNotConfiguredError extends Error {
 
 let client: Client | undefined;
 
-function getClient(): Client {
+/** Shared libSQL client. Throws DbNotConfiguredError if Turso isn't configured. */
+export function getClient(): Client {
   const url = process.env.TURSO_DATABASE_URL;
   if (!url) throw new DbNotConfiguredError();
   client ??= createClient({ url, authToken: process.env.TURSO_AUTH_TOKEN });

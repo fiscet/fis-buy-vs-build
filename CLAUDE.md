@@ -32,7 +32,7 @@ exists only to prevent decision paralysis and give the founder a reason to leave
 - **Zod** — schema for the LLM output (drives `generateObject`)
 - **Turso** (libSQL / SQLite) — lead storage (durable, serverless, no freeze)
 - **Resend** — sends the full report by email
-- **Upstash Redis** — rate limiting
+- **Turso** also backs rate limiting + the free-use gate (no separate Redis)
 - **Vercel** — hosting + cron
 - Knowledge base lives in a **local JSON file** (`data/kb-seed.json`), read-only at runtime
 
@@ -43,7 +43,7 @@ model string deep in the code). One LLM call per user request, maximum.
 
 ### Runtime flow (per user request)
 1. User submits the form (free-text process description + a few structured fields).
-2. **Rate limit check (Upstash) BEFORE any LLM call.** 2 free uses, then email gate.
+2. **Rate limit check (Turso) BEFORE any LLM call.** 2 free uses, then email gate.
 3. Map the input to a category from the knowledge base (LLM classification or simple match).
 4. Read the matching category data from the **local KB JSON**. No live search.
 5. Single `generateObject` call: input + KB category data -> full structured report (Zod schema).
@@ -176,7 +176,7 @@ const ReportSchema = z.object({
 4. **Frontend**: input form + comparison-table rendering + contextual-lean block. Get a working
    end-to-end demo here.
 5. **Lead capture**: Turso write + Resend email + the 2-use email gate.
-6. **Rate limiting**: Upstash, before the LLM call.
+6. **Rate limiting**: Turso (same DB as leads), before the LLM call.
 7. **Cron**: monthly search per category, validation, versioned KB write. Only after 1-6 work.
 8. **Deploy**: Vercel, configure cron + env.
 

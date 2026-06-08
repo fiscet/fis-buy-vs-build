@@ -66,24 +66,15 @@ RESEND_FROM=onboarding@resend.dev          # in prod: "Sviluppa o Compra <report
 
 ---
 
-## 3. Upstash — rate limiting + gate "3 usi → email" (Fase 6)
+## 3. Rate limiting + gate "2 usi → email" (Fase 6) — nessun account in più
 
-Il codice è già pronto. Senza queste chiavi il sistema **degrada in aperto** (nessun limite,
-nessun gate) così gira in locale. Con le chiavi: max 10 richieste/minuto per IP (anti-abuso)
-e dopo 2 analisi gratuite compare il gate email.
-
-### Passi
-1. Crea un account su https://upstash.com
-2. Crea un database **Redis** (regione vicina, es. EU)
-3. Dalla pagina del DB copia i valori REST → `.env.local`:
-
-```
-UPSTASH_REDIS_REST_URL=https://....upstash.io
-UPSTASH_REDIS_REST_TOKEN=...
-```
+Niente Upstash: rate limiting e gate usano **lo stesso Turso** dei lead (tabelle `usage` e
+`rate_limit` create in automatico). Quindi bastano le chiavi Turso del punto 1. Senza Turso il
+sistema **degrada in aperto** (nessun limite, nessun gate). Con Turso: max 10 richieste/minuto
+per IP (anti-abuso) e dopo 2 analisi gratuite compare il gate email.
 
 ### Come testiamo il gate
-1. Con le chiavi attive, genera **2 report** di fila dalla home.
+1. Genera **2 report** di fila dalla home.
 2. Alla **3ª** richiesta compare il box "Continua gratuitamente": inserisci email + consenso.
 3. Dopo lo sblocco la 3ª analisi parte da sola. (Il lead "email-gate" finisce su Turso.)
    Per ripetere il test: cancella i cookie del sito (resetta `svc_id`).
