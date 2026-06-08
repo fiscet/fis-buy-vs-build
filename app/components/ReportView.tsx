@@ -8,10 +8,13 @@ import { ADVANTAGE_LABELS, DIMENSION_LABELS, LEAN_LABELS } from "@/lib/labels";
  */
 
 function AdvantageBadge({ advantage }: { advantage: "buy" | "build" | "pari" }) {
+  // Distinct but equal-weight colours: Compra = teal, Sviluppa = navy, Pari = grey.
   const styles =
-    advantage === "pari"
-      ? "bg-surface-soft text-ink-soft"
-      : "bg-navy text-white";
+    advantage === "buy"
+      ? "bg-teal text-white"
+      : advantage === "build"
+        ? "bg-navy text-white"
+        : "bg-surface-soft text-ink-soft";
   return (
     <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${styles}`}>
       {advantage === "pari" ? "Pari" : `Vantaggio: ${ADVANTAGE_LABELS[advantage]}`}
