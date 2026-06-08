@@ -4,14 +4,14 @@ import { Redis } from "@upstash/redis";
 /**
  * Two limits enforced BEFORE any LLM call (CLAUDE.md hard rule):
  *  1. Abuse rate limit — keyed by IP (sliding window), protects cost/abuse.
- *  2. Free-use gate — keyed by client id: 3 free analyses, then an email gate.
+ *  2. Free-use gate — keyed by client id: 2 free analyses, then an email gate.
  *     Submitting an email "unlocks" the id for further use.
  *
  * Degrades OPEN when Upstash isn't configured (e.g. local dev): no key -> no
  * limit, so the tool still works. The injection guard is independent of this.
  */
 
-export const FREE_USES = 3;
+export const FREE_USES = 2;
 
 let redis: Redis | null | undefined;
 

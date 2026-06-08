@@ -43,7 +43,7 @@ model string deep in the code). One LLM call per user request, maximum.
 
 ### Runtime flow (per user request)
 1. User submits the form (free-text process description + a few structured fields).
-2. **Rate limit check (Upstash) BEFORE any LLM call.** 3 free uses, then email gate.
+2. **Rate limit check (Upstash) BEFORE any LLM call.** 2 free uses, then email gate.
 3. Map the input to a category from the knowledge base (LLM classification or simple match).
 4. Read the matching category data from the **local KB JSON**. No live search.
 5. Single `generateObject` call: input + KB category data -> full structured report (Zod schema).
@@ -175,7 +175,7 @@ const ReportSchema = z.object({
    Test with the seed KB.
 4. **Frontend**: input form + comparison-table rendering + contextual-lean block. Get a working
    end-to-end demo here.
-5. **Lead capture**: Turso write + Resend email + the 3-use email gate.
+5. **Lead capture**: Turso write + Resend email + the 2-use email gate.
 6. **Rate limiting**: Upstash, before the LLM call.
 7. **Cron**: monthly search per category, validation, versioned KB write. Only after 1-6 work.
 8. **Deploy**: Vercel, configure cron + env.

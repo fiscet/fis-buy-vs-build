@@ -70,7 +70,7 @@ RESEND_FROM=onboarding@resend.dev          # in prod: "Sviluppa o Compra <report
 
 Il codice è già pronto. Senza queste chiavi il sistema **degrada in aperto** (nessun limite,
 nessun gate) così gira in locale. Con le chiavi: max 10 richieste/minuto per IP (anti-abuso)
-e dopo 3 analisi gratuite compare il gate email.
+e dopo 2 analisi gratuite compare il gate email.
 
 ### Passi
 1. Crea un account su https://upstash.com
@@ -83,9 +83,9 @@ UPSTASH_REDIS_REST_TOKEN=...
 ```
 
 ### Come testiamo il gate
-1. Con le chiavi attive, genera **3 report** di fila dalla home.
-2. Alla **4ª** richiesta compare il box "Continua gratuitamente": inserisci email + consenso.
-3. Dopo lo sblocco la 4ª analisi parte da sola. (Il lead "email-gate" finisce su Turso.)
+1. Con le chiavi attive, genera **2 report** di fila dalla home.
+2. Alla **3ª** richiesta compare il box "Continua gratuitamente": inserisci email + consenso.
+3. Dopo lo sblocco la 3ª analisi parte da sola. (Il lead "email-gate" finisce su Turso.)
    Per ripetere il test: cancella i cookie del sito (resetta `svc_id`).
 
 ---

@@ -50,7 +50,7 @@ export async function POST(request: Request) {
     }
     return reply(
       {
-        error: "Hai esaurito le 3 analisi gratuite. Lascia la tua email per continuare.",
+        error: "Hai esaurito le 2 analisi gratuite. Lascia la tua email per continuare.",
         gate: "email",
       },
       { status: 403 },

@@ -58,7 +58,7 @@ export default function GateForm({
     >
       <h3 className="text-lg font-semibold text-navy">Continua gratuitamente</h3>
       <p className="mt-1 text-sm text-ink-soft">
-        Hai usato le 3 analisi gratuite. Lascia la tua email per continuare a usare lo strumento
+        Hai usato le 2 analisi gratuite. Lascia la tua email per continuare a usare lo strumento
         senza limiti.
       </p>
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
