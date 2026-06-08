@@ -1,103 +1,286 @@
 {
-  "version": "0.1-seed",
-  "lastUpdated": "2026-06-05",
+  "version": "0.2",
+  "lastUpdated": "2026-06-08",
   "_note": "Seed data scritto a mano per far girare il core (fase 2-4). Prezzi e soluzioni sono valori iniziali plausibili, NON verificati uno per uno: il cron mensile li raffinerà con ricerca live e validazione. Non trattare i prezzi come definitivi finché il cron non gira.",
   "categories": [
     {
       "id": "gestionale-interno",
       "name": "Strumento o gestionale interno su misura",
-      "aliases": ["gestionale", "software interno", "tool interno", "gestione operativa", "database aziendale"],
+      "aliases": [
+        "gestionale",
+        "software interno",
+        "tool interno",
+        "gestione operativa",
+        "database aziendale"
+      ],
       "description": "Strumento per gestire un processo operativo specifico dell'azienda (anagrafiche, flussi, stati, approvazioni) che i gestionali standard coprono solo in parte.",
       "tension": "alta",
       "commonSolutions": [
-        { "name": "Odoo", "type": "saas", "priceRange": "Community €0 / Enterprise ~€20-40 per utente/mese + moduli", "bestFor": "Aziende che vogliono un ERP modulare e personalizzabile senza partire da zero", "limitations": "Personalizzazioni profonde richiedono comunque uno sviluppatore Odoo" },
-        { "name": "Airtable", "type": "nocode", "priceRange": "~€20-45 per utente/mese", "bestFor": "Processi semplici, prototipi, team piccoli", "limitations": "Costo per-utente cresce in fretta, limiti su logica e volumi" },
-        { "name": "Notion", "type": "nocode", "priceRange": "~€10-18 per utente/mese", "bestFor": "Gestione leggera, documentale, collaborazione", "limitations": "Non è un vero gestionale: niente logica applicativa seria" },
-        { "name": "Zucchetti / TeamSystem", "type": "saas", "priceRange": "da ~€200/mese fino a decine di migliaia per on-premise", "bestFor": "PMI strutturate che vogliono un leader di mercato italiano", "limitations": "Rigidi sui processi fuori standard, usabilità spesso datata" }
+        {
+          "name": "Odoo",
+          "type": "saas",
+          "priceRange": "Community €0 / Enterprise ~€20-40 per utente/mese + moduli",
+          "bestFor": "Aziende che vogliono un ERP modulare e personalizzabile senza partire da zero",
+          "limitations": "Personalizzazioni profonde richiedono comunque uno sviluppatore Odoo"
+        },
+        {
+          "name": "Navigator (Boma Software)",
+          "type": "saas",
+          "priceRange": "~€1.500-5.000/anno (canone, in base ai moduli usati)",
+          "bestFor": "PMI che cercano un gestionale flessibile, adattabile alle esigenze e con supporto diretto italiano",
+          "limitations": "Personalizzazioni complesse richiedono interventi specialistici; meno community rispetto ai grandi ERP"
+        },
+        {
+          "name": "SAP Business One (SEIDOR One)",
+          "type": "saas",
+          "priceRange": "da ~€100/utente/mese oppure progetto su richiesta (tipicamente da €3.000-10.000 per PMI con pochi utenti)",
+          "bestFor": "PMI che puntano a integrazione completa, scalabilità, solidità ERP internazionale",
+          "limitations": "Investimento iniziale importante, curve di apprendimento, va valutata la reale necessità di tutte le funzioni"
+        },
+        {
+          "name": "Zucchetti / TeamSystem",
+          "type": "saas",
+          "priceRange": "da ~€200/mese (piccole PMI) fino a decine di migliaia per on-premise medi/grandi",
+          "bestFor": "PMI strutturate che vogliono un leader di mercato italiano",
+          "limitations": "Rigidi sui processi fuori standard, usabilità spesso datata; costi ricorrenti elevati su molte utenze"
+        },
+        {
+          "name": "No-code (Airtable, Notion ecc.)",
+          "type": "nocode",
+          "priceRange": "Airtable: ~€20-45 per utente/mese; Notion: ~€10-18 per utente/mese",
+          "bestFor": "Team piccoli, prototipi o gestioni semplici; rapida sperimentazione senza IT interno",
+          "limitations": "Costo per-utente può crescere rapidamente, limiti su personalizzazione, automazione e integrazioni complesse"
+        }
       ],
       "typicalCustomCost": {
-        "range": "€5.000-15.000",
-        "timeline": "4-8 settimane",
-        "maintenanceNote": "Richiede manutenzione continuativa (hosting, aggiornamenti, fix): prevedere un retainer o un referente tecnico."
+        "range": "€7.000-30.000 (MVP semplice da €7.000-12.000 / sistema completo anche €20.000-30.000+)",
+        "timeline": "MVP: 2-6 settimane; sistema completo: 2-4 mesi",
+        "maintenanceNote": "Richiede manutenzione tecnica continua (aggiornamenti, hosting, bugfix, backup); spesso preferibile prevedere retainer o un referente tecnico esterno."
       },
-      "whenBuildWins": "Quando il processo è il cuore differenziante dell'azienda, non rientra negli schemi dei gestionali standard, o il costo per-utente dei SaaS no-code esplode con la crescita del team.",
-      "updatedAt": "2026-06-05"
+      "whenBuildWins": "Conviene investire su misura quando: il team perde molte ore in lavori manuali o doppi inserimenti; nessun gestionale standard copre almeno l’80% dei processi reali senza workaround; serve integrare fortemente sistemi diversi o servono logiche operative realmente uniche; i costi SaaS crescono troppo con l’aumento del team. Un MVP su misura (rapido ed essenziale) può partire da budget ridotti, per processi centrali e con ROI chiaro nel primo anno.",
+      "updatedAt": "2026-06-08T13:39:21.253Z"
     },
     {
       "id": "prenotazioni-appuntamenti",
       "name": "Sistema di prenotazioni o appuntamenti",
-      "aliases": ["prenotazioni", "appuntamenti", "booking", "agenda", "calendario clienti"],
+      "aliases": [
+        "prenotazioni",
+        "appuntamenti",
+        "booking",
+        "agenda",
+        "calendario clienti"
+      ],
       "description": "Gestione di prenotazioni, appuntamenti o slot, spesso con disponibilità, conferme automatiche, promemoria e talvolta pagamenti.",
       "tension": "alta",
       "commonSolutions": [
-        { "name": "Calendly", "type": "saas", "priceRange": "€0 base / ~€10-16 per utente/mese", "bestFor": "Appuntamenti 1:1 semplici, consulenti, freelance", "limitations": "Poco flessibile su regole complesse, risorse multiple, logiche di settore" },
-        { "name": "Cal.com", "type": "saas", "priceRange": "€0 self-hosted / ~€12+ per utente/mese cloud", "bestFor": "Chi vuole open source e personalizzazione", "limitations": "Setup self-hosted richiede competenze tecniche" },
-        { "name": "Acuity Scheduling", "type": "saas", "priceRange": "~€16-50/mese", "bestFor": "Servizi con pagamenti e pacchetti", "limitations": "Branding e flussi vincolati al prodotto" }
+        {
+          "name": "Calendly",
+          "type": "saas",
+          "priceRange": "€0 base / ~€10-16 per utente/mese",
+          "bestFor": "Appuntamenti 1:1 semplici, consulenti, freelance",
+          "limitations": "Poco flessibile su regole complesse, risorse multiple, logiche di settore"
+        },
+        {
+          "name": "Acuity Scheduling",
+          "type": "saas",
+          "priceRange": "~€16-50/mese",
+          "bestFor": "Servizi con pagamenti e pacchetti",
+          "limitations": "Branding e flussi vincolati al prodotto"
+        },
+        {
+          "name": "Reservio",
+          "type": "saas",
+          "priceRange": "€0 base / ~€10-60/mese a seconda del piano (Starter, Standard, Pro), commissioni dal 3% all’1,19% su pagamenti online",
+          "bestFor": "PMI, centri benessere, servizi che vogliono app mobile dedicata, notifiche e gestione avanzata clienti",
+          "limitations": "Il piano gratuito è limitato (40 prenotazioni/mese, 100 clienti), commissioni su pagamenti online"
+        },
+        {
+          "name": "Bookizon",
+          "type": "saas",
+          "priceRange": "~€19-52/mese; moduli aggiuntivi a parte",
+          "bestFor": "Studi, consulenti e saloni con necessità gestionali avanzate (CRM, e-commerce, promozioni, pagamenti, agenda minuti)",
+          "limitations": "Alcune funzioni avanzate sono moduli extra a pagamento"
+        },
+        {
+          "name": "BookPing",
+          "type": "onprem",
+          "priceRange": "Licenza una tantum, senza canoni mensili (prezzo preciso non pubblicato online, orientativamente €250-400 una tantum dal listino 2023)",
+          "bestFor": "Chi preferisce zero abbonamenti, controllo totale e vuole una soluzione installabile, anche per più sedi",
+          "limitations": "Aggiornamenti e supporto da verificare col fornitore, tecnologia meno aggiornata rispetto alle piattaforme cloud"
+        }
       ],
       "typicalCustomCost": {
-        "range": "€3.000-7.000",
-        "timeline": "2-4 settimane",
-        "maintenanceNote": "Manutenzione contenuta se il dominio è stabile; attenzione a integrazioni con calendari e pagamenti."
+        "range": "€3.500-8.000",
+        "timeline": "2-5 settimane",
+        "maintenanceNote": "Costi di manutenzione contenuti se il dominio resta stabile; serve attenzione per monitorare integrazioni con pagamenti digitali e calendari esterni."
       },
-      "whenBuildWins": "Quando le regole di prenotazione sono specifiche del settore (risorse multiple, vincoli, listini variabili) o il sistema deve integrarsi nel sito/brand e nel gestionale esistente.",
-      "updatedAt": "2026-06-05"
+      "whenBuildWins": "Quando occorrono regole di prenotazione molto specifiche per il settore o integrazione push con sistemi gestionali, CRM, flussi personalizzati e branding totale (UI/UX su misura, processi staff complessi, logiche di priorità o risorse uniche).",
+      "updatedAt": "2026-06-08T13:39:32.916Z"
     },
     {
       "id": "portale-clienti",
       "name": "Portale clienti o area riservata",
-      "aliases": ["portale clienti", "area riservata", "customer portal", "area personale", "dashboard cliente"],
+      "aliases": [
+        "portale clienti",
+        "area riservata",
+        "customer portal",
+        "area personale",
+        "dashboard cliente"
+      ],
       "description": "Spazio autenticato dove i clienti consultano documenti, stati, pratiche, fatture o interagiscono con l'azienda.",
       "tension": "alta",
       "commonSolutions": [
-        { "name": "SuiteDash / Copilot", "type": "saas", "priceRange": "~€20-200/mese a seconda del piano", "bestFor": "Agenzie e servizi professionali che vogliono un portale pronto", "limitations": "Struttura e UX vincolate al prodotto, personalizzazione limitata" },
-        { "name": "Plugin membership su WordPress", "type": "nocode", "priceRange": "~€100-300 una tantum + hosting", "bestFor": "Aree riservate semplici su siti già in WordPress", "limitations": "Fragile su logiche complesse e volumi alti" },
-        { "name": "Moduli portale dei CRM (es. HubSpot, Zoho)", "type": "saas", "priceRange": "variabile, spesso in piani da ~€20+/utente/mese", "bestFor": "Chi ha già il CRM e vuole estenderlo", "limitations": "Legato all'ecosistema del CRM, poco flessibile fuori da esso" }
+        {
+          "name": "SuiteDash / Copilot",
+          "type": "saas",
+          "priceRange": "~€20-200/mese a seconda del piano",
+          "bestFor": "Agenzie e servizi che vogliono un portale pronto con dashboard, documenti, pagamenti e ticketing",
+          "limitations": "Personalizzazione grafica e flussi limitata; struttura dettata dalla piattaforma"
+        },
+        {
+          "name": "Gestendo",
+          "type": "saas",
+          "priceRange": "~€10-50/mese a seconda di utenti e moduli",
+          "bestFor": "Ditte di servizi, assistenza o installazione che vogliono integrare area clienti, gestione documenti, interventi e fatturazione elettronica",
+          "limitations": "Limitata personalizzazione UI/UX; non adatto a flussi molto particolari o fortemente brandizzati"
+        },
+        {
+          "name": "Moduli portale dei CRM (es. HubSpot, Zoho, Djaboo)",
+          "type": "saas",
+          "priceRange": "da ~€20/utente/mese (alcuni anche freemium per funzionalità di base)",
+          "bestFor": "Chi ha già un CRM cloud e cerca un'estensione portal per clienti con dashboard, documentazione e pagamenti",
+          "limitations": "Vincolato a ecosistema del CRM, flessibilità ridotta fuori dall’uso standard"
+        },
+        {
+          "name": "Plugin membership/area riservata per WordPress",
+          "type": "nocode",
+          "priceRange": "~€100-500 una tantum + hosting (~€10-30/mese)",
+          "bestFor": "Aree riservate semplici su siti WordPress esistenti, poco traffico, consultazione documenti",
+          "limitations": "Gestione utenti e flussi poco avanzata, rischio scalabilità e sicurezza su volumi elevati"
+        },
+        {
+          "name": "Sviluppo custom moderno (Next.js/Supabase etc.)",
+          "type": "onprem",
+          "priceRange": "Setup €3.500-30.000, canone mensile tipico €80-1.200/mese",
+          "bestFor": "PMI con logiche, UX, workflow e branding specifici, integrazione con sistemi interni o richieste GDPR avanzate",
+          "limitations": "Investimento iniziale più alto, richiede manutenzione professionale"
+        }
       ],
       "typicalCustomCost": {
-        "range": "€4.000-10.000",
-        "timeline": "3-6 settimane",
-        "maintenanceNote": "Autenticazione e dati sensibili richiedono attenzione a sicurezza e manutenzione nel tempo."
+        "range": "€3.500-30.000 setup + €80-1.200/mese per hosting e maintanance",
+        "timeline": "4-12 settimane (media per PMI: 6-8 settimane)",
+        "maintenanceNote": "Autenticazione, privacy e dati clienti richiedono attenzione continua; costi variano con volumi, sicurezza e richieste di personalizzazione."
       },
-      "whenBuildWins": "Quando il portale deve riflettere flussi e dati specifici dell'azienda, integrarsi con sistemi interni, o offrire un'esperienza brandizzata che i prodotti pronti non permettono.",
-      "updatedAt": "2026-06-05"
+      "whenBuildWins": "La soluzione custom conviene quando il portale deve riflettere flussi, ruoli, dashboard, processi e integrazioni specifici dell’azienda che le soluzioni SaaS o plugin pronti non permettono; oppure se si desidera una UI/UX fortemente brandizzata e integrazione profonda con gestionali, ERP o sistemi legacy.",
+      "updatedAt": "2026-06-08T13:39:40.806Z"
     },
     {
       "id": "ecommerce-custom",
       "name": "E-commerce: funzionalità oltre la piattaforma standard",
-      "aliases": ["ecommerce", "negozio online", "shop", "vendita online", "b2b ecommerce", "configuratore"],
+      "aliases": [
+        "ecommerce",
+        "negozio online",
+        "shop",
+        "vendita online",
+        "b2b ecommerce",
+        "configuratore"
+      ],
       "description": "Funzionalità custom su un e-commerce esistente: configuratori, listini B2B, integrazioni col gestionale, logiche di prezzo o spedizione non standard. NON la creazione del negozio base.",
       "tension": "alta",
       "commonSolutions": [
-        { "name": "Shopify", "type": "saas", "priceRange": "~€30-300+/mese + commissioni + app", "bestFor": "Negozi B2C standard, time-to-market rapido", "limitations": "Funzionalità fuori standard richiedono app a pagamento o sviluppo custom; limiti su logiche B2B complesse" },
-        { "name": "WooCommerce", "type": "nocode", "priceRange": "€0 plugin + hosting + plugin a pagamento", "bestFor": "Chi è già su WordPress e vuole flessibilità", "limitations": "Stack di plugin fragile, manutenzione e performance da gestire" },
-        { "name": "PrestaShop", "type": "nocode", "priceRange": "€0 open source + moduli + hosting", "bestFor": "Diffuso in Italia, buona base per cataloghi medi", "limitations": "Moduli di terze parti di qualità variabile, personalizzazioni profonde costose" }
+        {
+          "name": "Shopify (+ B2B/Plus)",
+          "type": "saas",
+          "priceRange": "~€30-350+/mese (+ app, commissioni). Per B2B avanzato: €2.000+/mese (Shopify Plus)",
+          "bestFor": "B2C e B2B con gestione contemporanea, time-to-market rapido, esigenze B2B non estreme",
+          "limitations": "Le funzionalità B2B e personalizzazioni avanzate richiedono Shopify Plus o sviluppo custom. Integrazioni ERP e logiche di prezzo custom spesso demandate ad app/add-on costose."
+        },
+        {
+          "name": "Shopware",
+          "type": "onprem",
+          "priceRange": "Free (Community) oppure da €600/mese (Rise), €2.400/mese (Evolve, per B2B avanzato)",
+          "bestFor": "Progetti complessi, ampio catalogo, esigenze strutturate (B2B, configuratori, multicanale)",
+          "limitations": "Customizzazione profonda più accessibile rispetto a SaaS, ma i piani enterprise hanno costi ricorrenti elevati. Integrare con gestionali richiede consulenza e budget."
+        },
+        {
+          "name": "PrestaShop",
+          "type": "nocode",
+          "priceRange": "Open source, moduli a pagamento (~€80-500/cad) + hosting (€20-60/mese)",
+          "bestFor": "PMI italiane con necessità di personalizzazione su cataloghi medi, ambiente diffusissimo in Italia",
+          "limitations": "Talvolta moduli di terze parti eterogenei; B2B e integrazioni spinte richiedono sviluppatori specializzati."
+        },
+        {
+          "name": "Arianna",
+          "type": "saas",
+          "priceRange": "Da ~€59/mese (piano base) a personalizzato (Premium/Add-On su richiesta)",
+          "bestFor": "Negozi italiani che puntano su personalizzazione grafica, connettori gestionali e servizi progettati per contesti locali",
+          "limitations": "Add-on premium dedicati per logiche personalizzate, alcune integrazioni richiedono budget extra e progetto dedicato."
+        },
+        {
+          "name": "MerchantPro",
+          "type": "saas",
+          "priceRange": "€35-135/mese a seconda del piano (+ eventuali costi setup/add-on)",
+          "bestFor": "Store con esigenze personalizzate per catalogo, workflow e integrazioni API, rapporto prezzo/funzionalità interessante",
+          "limitations": "Limiti su espansioni molto verticali; personalizzazione workflow approfondita possibile solo nei piani top."
+        }
       ],
       "typicalCustomCost": {
-        "range": "€6.000-20.000",
-        "timeline": "4-10 settimane",
-        "maintenanceNote": "Le integrazioni (gestionale, magazzino, pagamenti) sono il punto critico di manutenzione."
+        "range": "€8.000-30.000 (per moduli/integrazioni custom, configuratori, B2B avanzato)",
+        "timeline": "6-16 settimane, a seconda della complessità e degli ambienti da integrare",
+        "maintenanceNote": "Costi di manutenzione rilevanti soprattutto lato integrazioni ERP/gestionali e aggiornamenti di sicurezza."
       },
-      "whenBuildWins": "Quando servono logiche B2B, configuratori di prodotto, integrazione col gestionale/magazzino o regole di prezzo che le app standard non coprono senza compromessi.",
-      "updatedAt": "2026-06-05"
+      "whenBuildWins": "La soluzione custom (plugin, app su misura o sviluppo dedicato su piattaforma open) è da preferire quando le esigenze superano qualunque modello standard: configuratori di prodotto specifici, regole di prezzo/spedizione articolate, forti automatismi tra e-commerce e sistemi gestionali esistenti, esigenze B2B complesse, oppure workflow su misura non ottenibili tramite app/plugin commerciali.",
+      "updatedAt": "2026-06-08T13:39:50.300Z"
     },
     {
       "id": "integrazione-sistemi",
       "name": "Integrazione tra sistemi esistenti",
-      "aliases": ["integrazione", "sincronizzazione", "connettere sistemi", "automazione flussi", "api"],
+      "aliases": [
+        "integrazione",
+        "sincronizzazione",
+        "connettere sistemi",
+        "automazione flussi",
+        "api"
+      ],
       "description": "Far comunicare strumenti già in uso (gestionale, CRM, e-commerce, fatturazione) per eliminare il doppio inserimento dati e automatizzare passaggi.",
       "tension": "alta",
       "commonSolutions": [
-        { "name": "Zapier", "type": "saas", "priceRange": "€0 base / ~€20-69+/mese", "bestFor": "Automazioni semplici tra app popolari, nessun codice", "limitations": "Costo cresce con volumi e step; poco adatto a logiche complesse o dati sensibili" },
-        { "name": "Make (ex Integromat)", "type": "saas", "priceRange": "€0 base / ~€9-30+/mese", "bestFor": "Flussi più articolati con buon rapporto qualità-prezzo", "limitations": "Curva di apprendimento, debugging non sempre immediato" },
-        { "name": "n8n", "type": "nocode", "priceRange": "€0 self-hosted / piani cloud a pagamento", "bestFor": "Chi vuole open source, self-hosting e controllo dei dati", "limitations": "Self-hosting richiede competenze tecniche" }
+        {
+          "name": "Zapier",
+          "type": "saas",
+          "priceRange": "€0 base / ~€20-69+/mese",
+          "bestFor": "Automazioni semplici tra le app più popolari (es. e-commerce, CRM, fatturazione) senza codice.",
+          "limitations": "Il costo cresce rapidamente con i volumi e lo storico; poco adatto per logiche complesse o dati che devono restare on-premise."
+        },
+        {
+          "name": "Make (ex Integromat)",
+          "type": "saas",
+          "priceRange": "€0 base / ~€9-30+/mese",
+          "bestFor": "Flussi articolati e multi-step, buon rapporto qualità-prezzo per PMI con esigenze superiori ai classici 'trigger & action'",
+          "limitations": "Richiede una curva di apprendimento; debugging e trasparenza delle automazioni migliorabili."
+        },
+        {
+          "name": "n8n",
+          "type": "nocode",
+          "priceRange": "€0 self-hosted / da ~€20/mese per cloud managed",
+          "bestFor": "Aziende che desiderano una soluzione open source, control Data e possibilità di deploy locale o cloud proprio",
+          "limitations": "Richiede competenze tecniche per il self-hosted; libreria di integrazioni più piccola rispetto ai leader SaaS."
+        },
+        {
+          "name": "Arca Evolution <-> PrestaShop (modulo di connessione)",
+          "type": "onprem",
+          "priceRange": "Su preventivo; tipicamente da ~€2.000-5.000 setup una tantum + eventuale fee di aggiornamento/modifica",
+          "bestFor": "PMI che vogliono un'integrazione stabile tra gestionale Arca Evolution e piattaforma e-commerce PrestaShop, aggiornata in tempo reale.",
+          "limitations": "Soluzione rigida per contesti specifici; poco flessibile se cambiano i sistemi o servono logiche avanzate. Manutenzione a preventivo."
+        }
       ],
       "typicalCustomCost": {
-        "range": "€3.000-12.000",
-        "timeline": "2-6 settimane",
-        "maintenanceNote": "Le API esterne cambiano: prevedere manutenzione quando i sistemi collegati si aggiornano."
+        "range": "€5.000-30.000+",
+        "timeline": "2-8 settimane per MVP, 2-4 mesi per integrazione completa",
+        "maintenanceNote": "Calcolare ore per ogni aggiornamento API di sistemi collegati; è frequente dover adeguare periodicamente per tenere il servizio funzionante."
       },
-      "whenBuildWins": "Quando i volumi rendono i tool no-code costosi, i dati sono sensibili, o l'integrazione richiede logica e affidabilità che gli iPaaS generici non garantiscono.",
-      "updatedAt": "2026-06-05"
+      "whenBuildWins": "Quando i flussi sono critici e trasversali ai reparti; i processi sono troppo complessi o regolati per i semplici tool SaaS; servono performance garantite; bisogna rispettare normative (es. GDPR, SDI); o l'integrazione deve essere estensibile a nuovi strumenti all'interno dell'azienda senza dipendere da licenze terze.",
+      "updatedAt": "2026-06-08T13:39:59.737Z"
     }
   ]
 }
