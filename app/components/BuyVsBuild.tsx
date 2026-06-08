@@ -10,6 +10,8 @@ import {
 } from "@/lib/labels";
 import ReportView from "./ReportView";
 import LeadCapture from "./LeadCapture";
+import ExamplesModal from "./ExamplesModal";
+import type { Example } from "@/lib/examples";
 
 const MIN_DESCRIPTION = 15;
 
@@ -56,8 +58,17 @@ export default function BuyVsBuild() {
   const [report, setReport] = useState<Report | null>(null);
   const [categoryId, setCategoryId] = useState<string | undefined>(undefined);
   const [submittedText, setSubmittedText] = useState("");
+  const [showExamples, setShowExamples] = useState(false);
 
   const tooShort = description.trim().length < MIN_DESCRIPTION;
+
+  function handleSelectExample(ex: Example) {
+    setDescription(ex.description);
+    setTeamSize(ex.teamSize ?? "");
+    setBudget(ex.budget ?? "");
+    setTimePressure(ex.timePressure ?? "");
+    setShowExamples(false);
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -113,8 +124,17 @@ export default function BuyVsBuild() {
     <div>
       <form onSubmit={handleSubmit} className="space-y-5">
         <label className="block">
-          <span className="text-sm text-ink-soft">
-            Descrivi il processo che vuoi digitalizzare
+          <span className="flex items-center justify-between gap-3">
+            <span className="text-sm text-ink-soft">
+              Descrivi il processo che vuoi digitalizzare
+            </span>
+            <button
+              type="button"
+              onClick={() => setShowExamples(true)}
+              className="shrink-0 text-sm font-medium text-teal transition hover:text-teal-dark"
+            >
+              Ispirati a un esempio →
+            </button>
           </span>
           <textarea
             value={description}
@@ -163,6 +183,12 @@ export default function BuyVsBuild() {
           <LeadCapture report={report} categoryId={categoryId} inputText={submittedText} />
         </>
       )}
+
+      <ExamplesModal
+        open={showExamples}
+        onClose={() => setShowExamples(false)}
+        onSelect={handleSelectExample}
+      />
     </div>
   );
 }

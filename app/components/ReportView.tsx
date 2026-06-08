@@ -59,7 +59,7 @@ export default function ReportView({ report }: { report: Report }) {
         </div>
 
         <div className="rounded-2xl border border-line bg-surface p-6 shadow-sm">
-          <h3 className="text-lg font-semibold text-navy">Costruisci</h3>
+          <h3 className="text-lg font-semibold text-navy">Sviluppa</h3>
           <p className="mt-2 text-sm leading-relaxed text-ink-soft">
             {report.buildOption.summary}
           </p>
@@ -89,7 +89,7 @@ export default function ReportView({ report }: { report: Report }) {
               <tr className="border-b border-line bg-surface-soft text-left">
                 <th className="px-4 py-3 font-medium text-ink-soft">Dimensione</th>
                 <th className="px-4 py-3 font-medium text-ink-soft">Compra</th>
-                <th className="px-4 py-3 font-medium text-ink-soft">Costruisci</th>
+                <th className="px-4 py-3 font-medium text-ink-soft">Sviluppa</th>
               </tr>
             </thead>
             <tbody>

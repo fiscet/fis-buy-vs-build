@@ -15,13 +15,13 @@ export const DIMENSION_LABELS: Record<ComparisonDimension, string> = {
 
 export const ADVANTAGE_LABELS: Record<"buy" | "build" | "pari", string> = {
   buy: "Compra",
-  build: "Costruisci",
+  build: "Sviluppa",
   pari: "Pari",
 };
 
 export const LEAN_LABELS: Record<"buy" | "build" | "hybrid" | "depends", string> = {
   buy: "Tende verso: comprare",
-  build: "Tende verso: costruire",
+  build: "Tende verso: sviluppare",
   hybrid: "Tende verso: soluzione ibrida",
   depends: "Dipende dal contesto",
 };

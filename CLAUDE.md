@@ -146,7 +146,7 @@ const ReportSchema = z.object({
 ## Rendering rules (React only)
 
 - Render `comparison` as a **side-by-side comparison table**: one row per dimension, two
-  columns (Compra / Costruisci), with a visual marker for `advantage`.
+  columns (Compra / Sviluppa), with a visual marker for `advantage`.
 - Render `buyOption.representativeSolutions` as a short list (name, price range, fit, limits).
 - Render `buildOption` as a compact card (cost range, timeline, maintenance note).
 - Render `contextualLean` as a closing block: the lean, the reasoning, the next step (CTA).

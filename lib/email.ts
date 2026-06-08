@@ -60,7 +60,7 @@ function reportHtml(report: Report): string {
     <p style="color:#333;margin:0 0 8px">${esc(report.buyOption.summary)}</p>
     <ul style="padding-left:18px;margin:0">${solutions}</ul>
 
-    <h2 style="font-size:16px;margin:24px 0 8px">Costruisci</h2>
+    <h2 style="font-size:16px;margin:24px 0 8px">Sviluppa</h2>
     <p style="color:#333;margin:0 0 8px">${esc(report.buildOption.summary)}</p>
     <p style="color:#333;margin:0"><strong>Costo stimato:</strong> ${esc(report.buildOption.estimatedCostRange)}<br>
        <strong>Tempi stimati:</strong> ${esc(report.buildOption.estimatedTimeline)}<br>
@@ -71,7 +71,7 @@ function reportHtml(report: Report): string {
       <thead><tr>
         <th style="text-align:left;padding:8px;color:#999;font-weight:500">Dimensione</th>
         <th style="text-align:left;padding:8px;color:#999;font-weight:500">Compra</th>
-        <th style="text-align:left;padding:8px;color:#999;font-weight:500">Costruisci</th>
+        <th style="text-align:left;padding:8px;color:#999;font-weight:500">Sviluppa</th>
       </tr></thead>
       <tbody>${rows}</tbody>
     </table>
