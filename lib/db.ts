@@ -73,3 +73,32 @@ export async function insertLead(lead: LeadRecord): Promise<number> {
   });
   return Number(result.lastInsertRowid ?? 0);
 }
+
+/**
+ * Log an out-of-scope request (description only, NO email — anonymous) so we can
+ * see uncovered demand and prioritise new categories. Best-effort: never throws,
+ * skips cleanly when Turso isn't configured.
+ */
+export async function logUnmatched(inputText: string): Promise<void> {
+  let client: Client;
+  try {
+    client = getClient();
+  } catch {
+    return; // Turso not configured (e.g. local) — nothing to do
+  }
+  try {
+    await client.batch(
+      [
+        `CREATE TABLE IF NOT EXISTS unmatched_requests (
+          id         INTEGER PRIMARY KEY AUTOINCREMENT,
+          input_text TEXT NOT NULL,
+          created_at TEXT NOT NULL DEFAULT (datetime('now'))
+        )`,
+        { sql: `INSERT INTO unmatched_requests (input_text) VALUES (?)`, args: [inputText] },
+      ],
+      "write",
+    );
+  } catch (err) {
+    console.error("[unmatched] log failed (ignored):", err);
+  }
+}

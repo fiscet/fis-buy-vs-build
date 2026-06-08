@@ -4,6 +4,7 @@ import { generateReport, OutOfScopeError } from "@/lib/report";
 import { InjectionError } from "@/lib/guard";
 import { InputSchema } from "@/lib/schema";
 import { checkLimits, recordUse } from "@/lib/limits";
+import { logUnmatched } from "@/lib/db";
 import { getClientId, setClientCookie, getClientIp } from "@/lib/identity";
 
 /**
@@ -66,6 +67,8 @@ export async function POST(request: Request) {
       return reply({ error: err.message, blocked: true }, { status: 422 });
     }
     if (err instanceof OutOfScopeError) {
+      // Record the uncovered demand (description only, no email) for roadmap.
+      await logUnmatched(parsed.data.description);
       return reply({ error: err.message, outOfScope: true }, { status: 422 });
     }
     console.error("[analyze] generation failed:", err);

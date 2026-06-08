@@ -71,7 +71,9 @@ export default function PrivacyPage() {
             <p className="mt-2">
               Non raccogliamo categorie particolari di dati. Ti chiediamo di non
               inserire dati personali di terzi o informazioni riservate nella
-              descrizione del processo.
+              descrizione del processo. Se la richiesta non rientra nei casi
+              trattati dallo strumento, conserviamo la sola descrizione in forma
+              anonima (senza email) per capire quali aree coprire in futuro.
             </p>
           </div>
 
