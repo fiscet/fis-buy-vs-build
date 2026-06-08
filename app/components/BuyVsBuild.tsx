@@ -28,11 +28,11 @@ function Select({
 }) {
   return (
     <label className="block text-sm">
-      <span className="text-neutral-600">{label}</span>
+      <span className="text-ink-soft">{label}</span>
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="mt-1 w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-neutral-900 focus:border-neutral-900 focus:outline-none"
+        className="mt-1 w-full rounded-lg border border-line bg-white px-3 py-2 text-neutral-900 focus:border-teal focus:outline-none"
       >
         <option value="">—</option>
         {options.map((o) => (
@@ -113,7 +113,7 @@ export default function BuyVsBuild() {
     <div>
       <form onSubmit={handleSubmit} className="space-y-5">
         <label className="block">
-          <span className="text-sm text-neutral-600">
+          <span className="text-sm text-ink-soft">
             Descrivi il processo che vuoi digitalizzare
           </span>
           <textarea
@@ -121,7 +121,7 @@ export default function BuyVsBuild() {
             onChange={(e) => setDescription(e.target.value)}
             rows={4}
             placeholder="Es. Gestiamo le commesse e le approvazioni dei capi reparto su fogli Excel condivisi e si perde tutto. Vorrei un sistema interno per tracciare stati e responsabili."
-            className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-neutral-900 placeholder:text-neutral-400 focus:border-neutral-900 focus:outline-none"
+            className="mt-1 w-full rounded-lg border border-line px-3 py-2 text-neutral-900 placeholder:text-ink-soft/60 focus:border-teal focus:outline-none"
           />
         </label>
 
@@ -135,24 +135,24 @@ export default function BuyVsBuild() {
           <button
             type="submit"
             disabled={tooShort || status === "loading"}
-            className="rounded-lg bg-neutral-900 px-5 py-2.5 font-medium text-white transition hover:bg-neutral-700 disabled:cursor-not-allowed disabled:opacity-40"
+            className="rounded-lg bg-teal px-5 py-2.5 font-medium text-white shadow-sm transition hover:bg-teal-dark disabled:cursor-not-allowed disabled:opacity-40"
           >
             {status === "loading" ? "Sto analizzando…" : "Confronta le due strade"}
           </button>
           {tooShort && description.length > 0 && (
-            <span className="text-sm text-neutral-400">Descrivi il processo in almeno una frase.</span>
+            <span className="text-sm text-ink-soft/60">Descrivi il processo in almeno una frase.</span>
           )}
         </div>
       </form>
 
       {status === "error" && (
-        <p className="mt-6 rounded-lg border border-neutral-300 bg-neutral-50 p-4 text-sm text-neutral-700">
+        <p className="mt-6 rounded-lg border border-line bg-teal-tint p-4 text-sm text-ink">
           {errorMsg}
         </p>
       )}
 
       {status === "loading" && (
-        <p className="mt-6 animate-pulse text-sm text-neutral-400">
+        <p className="mt-6 animate-pulse text-sm text-ink-soft/60">
           Sto confrontando soluzioni pronte e sviluppo su misura per il tuo caso…
         </p>
       )}

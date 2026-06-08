@@ -17,7 +17,7 @@ export class EmailNotConfiguredError extends Error {
 
 let resend: Resend | undefined;
 
-function getResend(): { client: Resend; from: string } {
+function getResend(): { client: Resend; from: string; } {
   const apiKey = process.env.RESEND_API_KEY;
   const from = process.env.RESEND_FROM;
   if (!apiKey || !from) throw new EmailNotConfiguredError();
@@ -95,7 +95,7 @@ export async function sendReportEmail(to: string, report: Report): Promise<void>
   await client.emails.send({
     from,
     to,
-    subject: `Compra o Costruisci — confronto per "${report.category}"`,
+    subject: `Sviluppa o Compra — confronto per "${report.category}"`,
     html: reportHtml(report),
   });
 }

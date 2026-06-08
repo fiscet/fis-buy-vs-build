@@ -47,12 +47,12 @@ Il piano gratuito Turso è ampiamente sufficiente per i volumi di un lead magnet
    - **Per testare subito**, senza dominio: usa `onboarding@resend.dev`. Limite: puoi
      inviare **solo all'email del tuo account Resend**. Ottimo per la prova end-to-end.
    - **Per la produzione**: verifica un tuo dominio (Domains → Add Domain → record DNS),
-     poi usa un mittente tipo `Compra o Costruisci <report@tuodominio.it>`.
+     poi usa un mittente tipo `Sviluppa o Compra <report@tuodominio.it>`.
 
 ### In `.env.local`
 ```
 RESEND_API_KEY=re_...
-RESEND_FROM=onboarding@resend.dev          # in prod: "Compra o Costruisci <report@tuodominio.it>"
+RESEND_FROM=onboarding@resend.dev          # in prod: "Sviluppa o Compra <report@tuodominio.it>"
 ```
 
 ---
